@@ -32,7 +32,9 @@ step2:
   }
 </script>
 ```
-### 一共只有两个show和hide两个function可以调用
+### 一共只有两个function可以调用
+<button @click="$refs.PopperCom.show($event.target)">click me<button>
+<button @click="$refs.PopperCom.hide()">click me<button>
 ### 关于props参数 
 placement 同 https://popper.js.org/ 定义弹窗的方向，默认是auto，自动选择
 trigger：hover，focus，click 打开弹窗的方式，默认是click
