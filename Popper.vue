@@ -30,8 +30,7 @@ export default {
         options: {
           offset: [0, 8],
         },
-      }],
-      inited: false
+      }]
     }
   },
   props: ['placement', 'trigger', 'hideclose'],
@@ -50,16 +49,19 @@ export default {
       if (this.anchor.innerHTML === '') {
         return
       }
+      this.addClass(this.anchor, 'anchor')
       this.tooltip = this.$el.querySelector('.tooltip')
       this.popperInstance = createPopper(this.anchor, this.tooltip, {
-        placement: this.placement || 'right',
+        placement: this.placement || 'auto',
         modifiers: this.basicOpt,
       })
-      this.inited = true
+      this.bindEvents()
       return this
     },
-    show () {
-      if (!this.inited) return console.log('Popper is not initialized.')
+    show (event) {
+      if (event.target) {
+        this.init(event.target)
+      }
       this.hide()
       setTimeout(() => {
         this.display()
@@ -78,8 +80,8 @@ export default {
       const trigger = this.trigger || 'click'
       if (trigger === 'click' && e && e.target) {
         const contains = (() => {
-          return this.$tools.FindParent(e.target, (p) => {
-            return this.$tools.hasClass(p, this.anchor.className) || this.$tools.hasClass(p, this.tooltip.className)
+          return this.findParent(e.target, (p) => {
+            return this.hasClass(p, this.anchor.className) || this.hasClass(p, this.tooltip.className)
           })
         })()
         if (contains) {
@@ -92,7 +94,7 @@ export default {
         modifiers: opt,
       })
       this.popperInstance.update()
-      this.unbindEvents()
+      document.addEventListener('click', this.hide)
     },
     bindEvents () {
       this.unbindEvents()
@@ -118,6 +120,22 @@ export default {
         this.anchor.removeEventListener(event, this.hide);
       })
       document.removeEventListener('click', this.hide)
+    },
+    findParent: function (el, expr) {
+      let p = el
+      while (true) {
+        if (expr(p)) return p
+        if (!p) return null
+        if (p.tagName === 'BODY') return null
+        p = p.parentNode
+      }
+    },
+    hasClass: function (ele, cls) {
+      if (!ele || !ele.className) return false
+      return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'))
+    },
+    addClass: function (ele, cls) {
+      if (!this.hasClass(ele, cls)) ele.className += ' ' + cls
     }
   }}
 </script>
@@ -126,19 +144,19 @@ export default {
 $bcolor: #ccc;
 .tooltip {
   background: #fff;
-  padding: 0.2rem 0.08rem 0.12rem 0.08rem;
-  border-radius: 0.04rem;
+  padding: 30px 8px 12px 8px;
+  border-radius: 4px;
   display: none;
   z-index: 999;
   border: 1px solid $bcolor;
-  box-shadow: 0 0rem 0.05rem #999;
+  box-shadow: 0 0 5px #999;
 }
 .close {
   position: absolute;
-  right: 0.25rem;
-  top: 0.05rem;
+  right: 25px;
+  top: 5px;
   font-family: cursive, monospace, 'Courier New';
-  font-size: 0.25rem;
+  font-size: 25px;
   color: #999;
   cursor: pointer;
 }
@@ -149,8 +167,8 @@ $bcolor: #ccc;
 .arrow,
 .arrow::before {
   position: absolute;
-  width: 0.1rem;
-  height: 0.1rem;
+  width: 10px;
+  height: 10px;
   background: inherit;
 }
 
@@ -165,35 +183,35 @@ $bcolor: #ccc;
 }
 
 .tooltip[data-popper-placement^='top'] > .arrow {
-  bottom: -0.05rem;
+  bottom: -5px;
   border-right: 1px solid #ccc;
 }
 
 .tooltip[data-popper-placement^='bottom'] > .arrow {
-  top: -0.05rem;
+  top: -5px;
 }
 
 .tooltip[data-popper-placement^='left'] > .arrow {
-  right: -0.05rem;
+  right: -5px;
 }
 
 .tooltip[data-popper-placement^='right'] > .arrow {
-  left: -0.05rem;
+  left: -5px;
 }
 .tooltip[data-popper-placement^='top'] > .arrow::before {
-  box-shadow: 0.025rem 0.025rem 0.02rem #ccc;
+  box-shadow: 2.5px 2.5px 2px #ccc;
 }
 
 .tooltip[data-popper-placement^='bottom'] > .arrow::before {
-  box-shadow: -0.025rem -0.025rem 0.02rem #ccc;
+  box-shadow: -2.5px -2.5px 2px #ccc;
 }
 
 .tooltip[data-popper-placement^='left'] > .arrow::before {
   border-right: 1px solid $bcolor;
-  box-shadow: 0.025rem -0.025rem 0.02rem #ccc;
+  box-shadow: 2.5px -2.5px 2px #ccc;
 }
 
 .tooltip[data-popper-placement^='right'] > .arrow::before {
-  box-shadow: -0.025rem 0.025rem 0.02rem #ccc;
+  box-shadow: -2.5px 2.5px 2px #ccc;
 }
 </style>
