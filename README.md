@@ -14,7 +14,7 @@ step2:
 <template>
 <div>
   <div>useage 1</div>
-  <Popper>
+  <Popper placement="right" trigger="hover">
     <template #anchor><button>open</button></template>
     <div>Content is here</div>
   </Popper>
