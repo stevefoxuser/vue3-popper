@@ -19,7 +19,7 @@ step2:
     <div>Content is here</div>
   </Popper>
   <div>useage 2</div>
-  <button @click="$refs.PopperCom.show($event.target)">click me<button>
+  <button @click="$refs.PopperCom.show($event)">click me<button>
   <Popper ref="PopperCom">
     <div>Content is here</div>
   </Popper>
@@ -33,7 +33,7 @@ step2:
 </script>
 ```
 ### 一共只有两个function可以调用
-<button @click="$refs.PopperCom.show($event.target)">click me<button>
+<button @click="$refs.PopperCom.show($event)">click me<button>
 <button @click="$refs.PopperCom.hide()">click me<button>
 ### 关于props参数 
 @placement 定义弹窗的方向，top/top-start/top-end/bottom/bottom-start/bottom-end/left/left-start/left-end/right/right-start/right-end  默认是auto，自动选择
