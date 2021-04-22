@@ -31,7 +31,7 @@ step2:
     components:{ Popper }
   }
 </script>
-
+···
 ### 一共只有两个show和hide两个function可以调用
 ### 关于props参数 
 placement 同 https://popper.js.org/ 定义弹窗的方向，默认是auto，自动选择
