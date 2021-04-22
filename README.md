@@ -40,4 +40,4 @@ step2:
   
 @trigger：hover，focus，click 打开弹窗的方式，默认是click
 
-@hideclose：隐藏右上角的x，没什么屁屁用的参数
+@hideclose：隐藏右上角的x，弹出框很小的时候可以把x去掉，比如做tooltip的时候
