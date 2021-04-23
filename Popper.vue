@@ -101,10 +101,8 @@ export default {
       }
     },
     hideByClick (e) {
-      const clickpagetoclose = this.clickpagetoclose === false
-      if (this.clickpagetoclose) {
-        this.hide(e)
-      }
+      if (this.clickpagetoclose === false) return
+      this.hide(e)
     },
     bindEvents () {
       this.unbindEvents()
