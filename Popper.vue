@@ -4,7 +4,8 @@
       <slot class="anchor"
             name="anchor"></slot>
     </span>
-    <div class="tooltip">
+    <div class="tooltip"
+         :class="clearstyle?'clearstyle':''">
       <slot></slot>
       <div class="arrow"
            data-popper-arrow></div>
@@ -28,12 +29,12 @@ export default {
       basicOpt: [{
         name: 'offset',
         options: {
-          offset: [0, 8],
+          offset: [0, 10],
         },
       }]
     }
   },
-  props: ['placement', 'trigger', 'hideclose'],
+  props: ['placement', 'trigger', 'hideclose', 'clickpagetoclose', 'clearstyle'],
   created () {
   },
   mounted () {
@@ -49,7 +50,7 @@ export default {
       if (this.anchor.innerHTML === '') {
         return
       }
-      this.addClass(this.anchor, 'anchor')
+      this.$tools.addClass(this.anchor, 'anchor')
       this.tooltip = this.$el.querySelector('.tooltip')
       this.popperInstance = createPopper(this.anchor, this.tooltip, {
         placement: this.placement || 'auto',
@@ -62,7 +63,7 @@ export default {
       if (event.target) {
         this.init(event.target)
       }
-      this.hide()
+      this.hide('NoCallback')
       setTimeout(() => {
         this.display()
       })
@@ -80,8 +81,8 @@ export default {
       const trigger = this.trigger || 'click'
       if (trigger === 'click' && e && e.target) {
         const contains = (() => {
-          return this.findParent(e.target, (p) => {
-            return this.hasClass(p, this.anchor.className) || this.hasClass(p, this.tooltip.className)
+          return this.$tools.findParent(e.target, (p) => {
+            return this.$tools.hasClass(p, this.anchor.className) || this.$tools.hasClass(p, this.tooltip.className)
           })
         })()
         if (contains) {
@@ -94,7 +95,16 @@ export default {
         modifiers: opt,
       })
       this.popperInstance.update()
-      document.addEventListener('click', this.hide)
+      document.removeEventListener('click', this.hide)
+      if (e !== 'NoCallback') {
+        this.$emit('close')
+      }
+    },
+    hideByClick (e) {
+      const clickpagetoclose = this.clickpagetoclose === false
+      if (this.clickpagetoclose) {
+        this.hide(e)
+      }
     },
     bindEvents () {
       this.unbindEvents()
@@ -107,7 +117,9 @@ export default {
         this.anchor.addEventListener('blur', this.hide)
       } else if (trigger === 'click') {
         this.anchor.addEventListener('click', this.show)
-        document.addEventListener('click', this.hide)
+        document.addEventListener('click', this.hideByClick)
+      } else if (trigger === 'manual') {
+
       }
     },
     unbindEvents () {
@@ -120,22 +132,6 @@ export default {
         this.anchor.removeEventListener(event, this.hide);
       })
       document.removeEventListener('click', this.hide)
-    },
-    findParent: function (el, expr) {
-      let p = el
-      while (true) {
-        if (expr(p)) return p
-        if (!p) return null
-        if (p.tagName === 'BODY') return null
-        p = p.parentNode
-      }
-    },
-    hasClass: function (ele, cls) {
-      if (!ele || !ele.className) return false
-      return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'))
-    },
-    addClass: function (ele, cls) {
-      if (!this.hasClass(ele, cls)) ele.className += ' ' + cls
     }
   }}
 </script>
@@ -213,5 +209,10 @@ $bcolor: #ccc;
 
 .tooltip[data-popper-placement^='right'] > .arrow::before {
   box-shadow: -2.5px 2.5px 2px #ccc;
+}
+
+.tooltip.clearstyle {
+  padding: 0;
+  border: 1px solid $bcolor;
 }
 </style>
