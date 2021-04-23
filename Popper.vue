@@ -52,6 +52,10 @@ export default {
       }
       this.$tools.addClass(this.anchor, 'anchor')
       this.tooltip = this.$el.querySelector('.tooltip')
+      // 重复创建会产生Memory Leak
+      if (this.popperInstance.destroy) {
+        this.popperInstance.destroy()
+      }
       this.popperInstance = createPopper(this.anchor, this.tooltip, {
         placement: this.placement || 'auto',
         modifiers: this.basicOpt,
