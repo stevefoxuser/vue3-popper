@@ -50,9 +50,8 @@ export default {
       if (this.anchor.innerHTML === '') {
         return
       }
-      this.$tools.addClass(this.anchor, 'anchor')
+      this.addClass(this.anchor, 'anchor')
       this.tooltip = this.$el.querySelector('.tooltip')
-      // 重复创建会产生Memory Leak
       if (this.popperInstance.destroy) {
         this.popperInstance.destroy()
       }
@@ -85,8 +84,8 @@ export default {
       const trigger = this.trigger || 'click'
       if (trigger === 'click' && e && e.target) {
         const contains = (() => {
-          return this.$tools.findParent(e.target, (p) => {
-            return this.$tools.hasClass(p, this.anchor.className) || this.$tools.hasClass(p, this.tooltip.className)
+          return this.findParent(e.target, (p) => {
+            return this.hasClass(p, this.anchor.className) || this.hasClass(p, this.tooltip.className)
           })
         })()
         if (contains) {
@@ -98,7 +97,6 @@ export default {
       this.popperInstance.setOptions({
         modifiers: opt,
       })
-      this.popperInstance.update()
       document.removeEventListener('click', this.hide)
       if (e !== 'NoCallback') {
         this.$emit('close')
@@ -134,6 +132,22 @@ export default {
         this.anchor.removeEventListener(event, this.hide);
       })
       document.removeEventListener('click', this.hide)
+    },
+    findParent: function (el, expr) {
+      let p = el
+      while (true) {
+        if (expr(p)) return p
+        if (!p) return null
+        if (p.tagName === 'BODY') return null
+        p = p.parentNode
+      }
+    },
+    hasClass: function (ele, cls) {
+      if (!ele || !ele.className) return false
+      return ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'))
+    },
+    addClass: function (ele, cls) {
+      if (!this.hasClass(ele, cls)) ele.className += ' ' + cls
     }
   }}
 </script>
